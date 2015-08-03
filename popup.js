@@ -38,7 +38,9 @@ var packageFromText = function(text) {
 		return "org.thebigboss.onehandwizard";
 	}
 	// Generic matching, to see if something looks like a package identifier
-	return /^[\w.-]+$/.test(text);
+	if (/^[\w.-]+$/.test(text)) {
+		return text;
+	}
 }
 
 var giftPackage = function(packageText, identifier) {
