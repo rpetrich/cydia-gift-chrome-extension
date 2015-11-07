@@ -56,7 +56,7 @@ function doGiftWithArray() {
 			// var finishedFirst;
 			chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
 				// if (!finishedFirst) {
-					finishedFirst = true;
+					// finishedFirst = true;
 					message("Filling form...");
 					chrome.tabs.executeScript(details.tabId, { code: 
 						"var f=document.createElement('form');f.method='POST';f.action='complimentary_';" +
@@ -75,7 +75,7 @@ function doGiftWithArray() {
 			// var finishedSecond;
 			chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
 				// if (!finishedSecond) {
-					finishedSecond = true;
+					// finishedSecond = true;
 					message("Fetching results...");
 					chrome.tabs.executeScript(details.tabId, { code: 
 						"document.querySelector('block').innerText"
