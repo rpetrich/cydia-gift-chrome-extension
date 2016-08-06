@@ -1,3 +1,4 @@
+
 var run = function(code, callback) {
 	chrome.tabs.executeScript({ code: code }, function(results) {
 		callback(results[0]);
@@ -8,52 +9,45 @@ var message = function(string, target) {
 	document.getElementById(target || "results").innerText = string;
 }
 
+function messageLog(string, resultNM, target) {
+	document.getElementById(target || "results"+resultNM).innerText = string;
+}
 var packageFromText = function(text) {
-	// Some mappings for my packages
-	if (/little/i.test(text)) {
-		return "com.rpetrich.littlebrother";
-	}
-	if (/recorder/i.test(text)) {
-		return "com.booleanmagic.displayrecorder";
-	}
-	if (/pane/i.test(text)) {
-		return "com.rpetrich.videopane";
-	}
-	if (/auxo/i.test(text)) {
-		return "com.a3tweaks.auxo-le";
-	}
-	if (/grabby/i.test(text)) {
-		return "com.rpetrich.grabby";
-	}
-	if (/lockdown/i.test(text)) {
-		return "com.rpetrich.biolockdown";
-	}
-	if (/fullforce/i.test(text)) {
-		return "com.rpetrich.fullforce";
-	}
-	if (/haptic/i.test(text)) {
-		return "hapticpro";
-	}
-	if (/wizard/i.test(text)) {
-		return "org.thebigboss.onehandwizard";
-	}
-	// Generic matching, to see if something looks like a package identifier
-	if (/^[\w.-]+$/.test(text)) {
-		return text;
-	}
+	return "com.imokhles."+text; // change it to your identifier
 }
 
-var giftPackage = function(packageText, identifier) {
-	// Precheck
-	document.getElementById("identifier").value = identifier;
-	var package = packageFromText(packageText);
+
+function SplitTheString(CommaSepStr) {
+    var ResultArray = null; 
+
+    if (CommaSepStr!= null) {
+    	var SplitChars = ',';
+        if (CommaSepStr.indexOf(SplitChars) >= 0) {
+            ResultArray = CommaSepStr.split(SplitChars);
+        }
+    }
+    return ResultArray ;
+}
+
+var countNM = 0;
+var doArrayGift = function(identifierIndex) {
+
+	// [separate ids by comma] ex: 633674,5602631,4497721,132261,5124413,467099846,2978087,2971462,466205281,5987906,465337509,467097230,441446,5573314,465939862
+	// maxi 15 identifier ( 14 comma )
+
+	var identifierCydia = document.getElementById("identifier").value;
+	var tempArray = new Array();
+	tempArray = SplitTheString(identifierCydia);
+
+	var identifier = document.getElementById("identifier"+identifierIndex).value;
+	var packagePre = document.getElementById("package").value; 
+	var package = packageFromText(packagePre);
 	if (!package) {
 		document.getElementById("package").value = packageText;
 		document.getElementById("submit").style.display = "block";
 		message("Fill in package identifier above");
 		return;
 	}
-	document.getElementById("package").value = package;
 	document.getElementById("submit").style.display = "none";
 	var url = "https://cydia.saurik.com/connect/products/" + package + "/complimentary";
 
@@ -89,6 +83,12 @@ var giftPackage = function(packageText, identifier) {
 				document.getElementById("submit").style.display = "block";
 				chrome.tabs.remove([details.tabId], function() {
 					// Goodnight Moon
+					if (countNM >= tempArray.length) {
+						message("Done all ids");
+						return;
+					}
+					doArrayGift(countNM);
+					countNM++;
 				});
 			});
 		}
@@ -107,20 +107,24 @@ var giftPackage = function(packageText, identifier) {
 	});
 }
 
-message("Getting data...");
-
-run("document.getSelection().toString()", function(selection) {
-	run("location.hostname+location.pathname", function(urldata) {
-		if (urldata == "mail.google.com/mail/u/0/") {
-			run("(function(e){return e[e.length-1].innerText})(document.querySelectorAll('h2'))", function(subject) {
-				giftPackage(subject, selection);
-			});
-		} else {
-			giftPackage("", selection);
-		}
-	});
-});
-
+// setup fields
+function setupFields() {
+	var identifierCydia = document.getElementById("identifier").value;
+	var tempArray = new Array();
+	tempArray = SplitTheString(identifierCydia);
+	for (var i = 0; i < tempArray.length; i++) {
+		document.getElementById("identifier"+i).value = tempArray[i];
+	}
+	document.getElementById("setupBtn").style.display = "none";
+}
 document.getElementById("submit").addEventListener("click", function() {
-	giftPackage(document.getElementById("package").value, document.getElementById("identifier").value);
+ 	doArrayGift(0);
 }, false);
+
+document.getElementById("setupBtn").addEventListener("click", function() {
+	var identifier = document.getElementById("identifier0").value;
+	if (!identifier) {
+		setupFields();
+	}
+}, false);
+
