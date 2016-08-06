@@ -1,6 +1,16 @@
 # cydia-gift-chrome-extension
 Completely gross and unsupported Chrome extension to gift Cydia Store packages
 
+## Screenshot
+
+<p align="center">
+  <img src="screenshotCydiaGiftExtension.png"/>
+</p>
+
+## NOTE
+
+* change your own tweaks identifer inside popup.js file line 16
+
 ## How to use
 
 * change packageFromText inside popup.js
